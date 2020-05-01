@@ -7,15 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LoanApplication.TacticalDdd.PortsAdapters.WebApi
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class LoanApplicationController : ControllerBase
     {
-        private readonly LoanApplicationSubmissionService loanApplicationSubmissionService;
-        private readonly LoanApplicationEvaluationService loanApplicationEvaluationService;
-        private readonly LoanApplicationDecisionService loanApplicationDecisionService;
-        private readonly LoanApplicationFinder loanApplicationFinder;
+        private readonly LoanApplicationSubmissionService _loanApplicationSubmissionService;
+        private readonly LoanApplicationEvaluationService _loanApplicationEvaluationService;
+        private readonly LoanApplicationDecisionService _loanApplicationDecisionService;
+        private readonly LoanApplicationFinder _loanApplicationFinder;
 
         public LoanApplicationController(
             LoanApplicationSubmissionService loanApplicationSubmissionService,
@@ -23,50 +23,50 @@ namespace LoanApplication.TacticalDdd.PortsAdapters.WebApi
             LoanApplicationFinder loanApplicationFinder, 
             LoanApplicationDecisionService loanApplicationDecisionService)
         {
-            this.loanApplicationSubmissionService = loanApplicationSubmissionService;
-            this.loanApplicationEvaluationService = loanApplicationEvaluationService;
-            this.loanApplicationFinder = loanApplicationFinder;
-            this.loanApplicationDecisionService = loanApplicationDecisionService;
+            _loanApplicationSubmissionService = loanApplicationSubmissionService;
+            _loanApplicationEvaluationService = loanApplicationEvaluationService;
+            _loanApplicationFinder = loanApplicationFinder;
+            _loanApplicationDecisionService = loanApplicationDecisionService;
         }
         
         [HttpPost]
         public string Create([FromBody] LoanApplicationDto loanApplicationDto)
         {
-            var newApplicationNumber = loanApplicationSubmissionService.SubmitLoanApplication(loanApplicationDto, User);
+            var newApplicationNumber = _loanApplicationSubmissionService.SubmitLoanApplication(loanApplicationDto);
             return newApplicationNumber;
         }
         
         [HttpPost("evaluate/{applicationNumber}")]
         public IActionResult Evaluate([FromRoute] string applicationNumber)
         {
-            loanApplicationEvaluationService.EvaluateLoanApplication(applicationNumber);
+            _loanApplicationEvaluationService.EvaluateLoanApplication(applicationNumber);
             return Ok();
         }
         
         [HttpPost("accept/{applicationNumber}")]
         public IActionResult Accept([FromRoute] string applicationNumber)
         {
-            loanApplicationDecisionService.AcceptApplication(applicationNumber,User);
+            _loanApplicationDecisionService.AcceptApplication(applicationNumber,User);
             return Ok();
         }
         
         [HttpPost("reject/{applicationNumber}")]
         public IActionResult Reject([FromRoute] string applicationNumber)
         {
-            loanApplicationDecisionService.RejectApplication(applicationNumber,User, null);
+            _loanApplicationDecisionService.RejectApplication(applicationNumber,User, null);
             return Ok();
         }
         
         [HttpGet("{applicationNumber}")]
         public LoanApplicationDto Get([FromRoute] string applicationNumber)
         {
-            return loanApplicationFinder.GetLoanApplication(applicationNumber);
+            return _loanApplicationFinder.GetLoanApplication(applicationNumber);
         }
         
         [HttpPost("find")]
         public IList<LoanApplicationInfoDto> Find([FromBody] LoanApplicationSearchCriteriaDto criteria)
         {
-            return loanApplicationFinder.FindLoadApplication(criteria);
+            return _loanApplicationFinder.FindLoadApplication(criteria);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace LoanApplication.TacticalDdd.Tests.ApplicationTests
             };
 
             var newApplicationNumber = loanApplicationSubmissionService
-                .SubmitLoanApplication(validApplication, OperatorIdentity("admin"));
+                .SubmitLoanApplication(validApplication);
             
             Assert.False(string.IsNullOrWhiteSpace(newApplicationNumber));
             var createdLoanApplication = existingApplications.WithNumber(LoanApplicationNumber.Of(newApplicationNumber));
@@ -109,7 +109,7 @@ namespace LoanApplication.TacticalDdd.Tests.ApplicationTests
             };
 
             var ex = Assert.Throws<ArgumentException>(() => loanApplicationSubmissionService
-                .SubmitLoanApplication(validApplication, OperatorIdentity("admin")));
+                .SubmitLoanApplication(validApplication));
             
             Assert.Equal("National Identifier must be 11 chars long", ex.Message);
         }

@@ -29,9 +29,9 @@ namespace LoanApplication.TacticalDdd.DomainModel
         {
         }
 
-        public void Evaluate(ScoringRules rules)
+        public void Evaluate(ScoringRulesContext rulesContext)
         {
-            Score = rules.Evaluate(this);
+            Score = rulesContext.Evaluate(this);
             if (Score.IsRed())
             {
                 Status = LoanApplicationStatus.Rejected;
@@ -50,7 +50,7 @@ namespace LoanApplication.TacticalDdd.DomainModel
                 throw new ApplicationException("Cannot accept application before scoring");
             }
             
-            if (!decisionBy.CanAccept(this.Loan.LoanAmount))
+            if (!decisionBy.CanAccept(Loan.LoanAmount))
             {
                 throw new ApplicationException("Operator does not have required competence level to accept application");
             }

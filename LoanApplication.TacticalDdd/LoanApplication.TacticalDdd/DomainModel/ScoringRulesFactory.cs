@@ -4,19 +4,19 @@ namespace LoanApplication.TacticalDdd.DomainModel
 {
     public class ScoringRulesFactory
     {
-        private readonly IDebtorRegistry debtorRegistry;
+        private readonly IDebtorRegistry _debtorRegistry;
 
         public ScoringRulesFactory(IDebtorRegistry debtorRegistry)
         {
-            this.debtorRegistry = debtorRegistry;
+            _debtorRegistry = debtorRegistry;
         }
         
-        public ScoringRules DefaultSet => new ScoringRules(new List<IScoringRule>
+        public ScoringRulesContext DefaultSet => new ScoringRulesContext(new List<IScoringRule>
         {
             new LoanAmountMustBeLowerThanPropertyValue(),
             new CustomerAgeAtTheDateOfLastInstallmentMustBeBelow65(),
             new InstallmentAmountMustBeLowerThen15PercentOfCustomerIncome(),
-            new CustomerIsNotARegisteredDebtor(debtorRegistry)
+            //new CustomerIsNotARegisteredDebtor(_debtorRegistry)
         });
     }
 }

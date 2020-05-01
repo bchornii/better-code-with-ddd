@@ -7,10 +7,10 @@ namespace LoanApplication.TacticalDdd.Application
 {
     public class LoanApplicationDecisionService
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly ILoanApplicationRepository loanApplications;
-        private readonly IOperatorRepository operators;
-        private readonly IEventPublisher eventPublisher;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILoanApplicationRepository _loanApplicationRepository;
+        private readonly IOperatorRepository _operatorRepository;
+        private readonly IEventPublisher _eventPublisher;
 
         public LoanApplicationDecisionService(
             IUnitOfWork unitOfWork,
@@ -18,34 +18,36 @@ namespace LoanApplication.TacticalDdd.Application
             IOperatorRepository operators, 
             IEventPublisher eventPublisher)
         {
-            this.unitOfWork = unitOfWork;
-            this.loanApplications = loanApplications;
-            this.operators = operators;
-            this.eventPublisher = eventPublisher;
+            _unitOfWork = unitOfWork;
+            _loanApplicationRepository = loanApplications;
+            _operatorRepository = operators;
+            _eventPublisher = eventPublisher;
         }
         
         public void RejectApplication(string applicationNumber, ClaimsPrincipal principal, string rejectionReason)
         {
-            var loanApplication = loanApplications.WithNumber(LoanApplicationNumber.Of(applicationNumber));
-            var user = operators.WithLogin(Login.Of(principal.Identity.Name));
+            var loanApplication = _loanApplicationRepository
+                .WithNumber(LoanApplicationNumber.Of(applicationNumber));
+            var user = _operatorRepository.WithLogin(Login.Of(principal.Identity.Name));
             
             loanApplication.Reject(user);
             
-            unitOfWork.CommitChanges();
+            _unitOfWork.CommitChanges();
             
-            eventPublisher.Publish(new LoanApplicationRejected(loanApplication));
+            _eventPublisher.Publish(new LoanApplicationRejected(loanApplication));
         }
 
         public void AcceptApplication(string applicationNumber, ClaimsPrincipal principal)
         {
-            var loanApplication = loanApplications.WithNumber(LoanApplicationNumber.Of(applicationNumber));
-            var user = operators.WithLogin(Login.Of(principal.Identity.Name));
+            var loanApplication = _loanApplicationRepository
+                .WithNumber(LoanApplicationNumber.Of(applicationNumber));
+            var user = _operatorRepository.WithLogin(Login.Of(principal.Identity.Name));
             
             loanApplication.Accept(user);
             
-            unitOfWork.CommitChanges();
+            _unitOfWork.CommitChanges();
             
-            eventPublisher.Publish(new LoanApplicationAccepted(loanApplication));
+            _eventPublisher.Publish(new LoanApplicationAccepted(loanApplication));
         }
     }
 }

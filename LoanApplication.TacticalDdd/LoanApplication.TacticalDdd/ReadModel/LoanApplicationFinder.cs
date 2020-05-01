@@ -9,16 +9,16 @@ namespace LoanApplication.TacticalDdd.ReadModel
 {
     public class LoanApplicationFinder
     {
-        private readonly string connectionString;
+        private readonly string _connectionString;
         
         public LoanApplicationFinder(string connectionString)
         {
-            this.connectionString = connectionString;
+            _connectionString = connectionString;
         }
 
         public IList<LoanApplicationInfoDto> FindLoadApplication(LoanApplicationSearchCriteriaDto criteria)
         {
-            using var cn = new NpgsqlConnection(connectionString);
+            using var cn = new NpgsqlConnection(_connectionString);
             
             cn.Open();
             return cn
@@ -64,7 +64,7 @@ namespace LoanApplication.TacticalDdd.ReadModel
         
         public LoanApplicationDto GetLoanApplication(string applicationNumber)
         {
-            using var cn = new NpgsqlConnection(connectionString);
+            using var cn = new NpgsqlConnection(_connectionString);
             
             cn.Open();
             return cn

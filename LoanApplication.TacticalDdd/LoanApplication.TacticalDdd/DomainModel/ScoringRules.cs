@@ -3,18 +3,18 @@ using System.Linq;
 
 namespace LoanApplication.TacticalDdd.DomainModel
 {
-    public class ScoringRules
+    public class ScoringRulesContext
     {
-        private readonly IList<IScoringRule> rules;
+        private readonly IList<IScoringRule> _rules;
         
-        public ScoringRules(IList<IScoringRule> rules)
+        public ScoringRulesContext(IList<IScoringRule> rules)
         {
-            this.rules = rules;
+            _rules = rules;
         }
 
         public ScoringResult Evaluate(LoanApplication loanApplication)
         {
-            var brokenRules = rules
+            var brokenRules = _rules
                 .Where(r => !r.IsSatisfiedBy(loanApplication))
                 .ToList();
 

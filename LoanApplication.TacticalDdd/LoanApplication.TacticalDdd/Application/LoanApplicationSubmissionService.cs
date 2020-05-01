@@ -1,4 +1,3 @@
-using System;
 using System.Security.Claims;
 using LoanApplication.TacticalDdd.Application.Api;
 using LoanApplication.TacticalDdd.DomainModel;
@@ -8,21 +7,23 @@ namespace LoanApplication.TacticalDdd.Application
 {
     public class LoanApplicationSubmissionService
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly ILoanApplicationRepository loanApplications;
-        private readonly IOperatorRepository operators;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILoanApplicationRepository _loanApplicationRepository;
+        private readonly IOperatorRepository _operatorRepository;
 
-        public LoanApplicationSubmissionService(IUnitOfWork unitOfWork,ILoanApplicationRepository loanApplications, IOperatorRepository operators)
+        public LoanApplicationSubmissionService(IUnitOfWork unitOfWork,
+            ILoanApplicationRepository loanApplicationRepository,
+            IOperatorRepository operatorRepository)
         {
-            this.unitOfWork = unitOfWork;
-            this.loanApplications = loanApplications;
-            this.operators = operators;
+            _unitOfWork = unitOfWork;
+            _loanApplicationRepository = loanApplicationRepository;
+            _operatorRepository = operatorRepository;
         }
-        
-        public string SubmitLoanApplication(LoanApplicationDto loanApplicationDto, ClaimsPrincipal principal)
+
+        public string SubmitLoanApplication(LoanApplicationDto loanApplicationDto)
         {
-            var user = operators.WithLogin(Login.Of(principal.Identity.Name));
-            
+            var user = _operatorRepository.WithLogin(Login.Of("admin"));
+
             var application = new DomainModel.LoanApplication
             (
                 LoanApplicationNumber.NewNumber(),
@@ -39,7 +40,7 @@ namespace LoanApplication.TacticalDdd.Application
                         loanApplicationDto.CustomerAddress.City,
                         loanApplicationDto.CustomerAddress.Street
                     )
-                ), 
+                ),
                 new Property
                 (
                     new MonetaryAmount(loanApplicationDto.PropertyValue),
@@ -50,7 +51,7 @@ namespace LoanApplication.TacticalDdd.Application
                         loanApplicationDto.PropertyAddress.City,
                         loanApplicationDto.PropertyAddress.Street
                     )
-                ), 
+                ),
                 new Loan
                 (
                     new MonetaryAmount(loanApplicationDto.LoanAmount),
@@ -59,15 +60,12 @@ namespace LoanApplication.TacticalDdd.Application
                 ),
                 user
             );
-            
-            loanApplications.Add(application);
-            
-            unitOfWork.CommitChanges();
+
+            _loanApplicationRepository.Add(application);
+
+            _unitOfWork.CommitChanges();
 
             return application.Number;
-            
         }
-        
     }
-    
 }
